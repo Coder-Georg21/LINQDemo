@@ -7,6 +7,8 @@ namespace LINQDemo
 {
     class Program
     {
+        public static object Age { get; private set; }
+
         static void Main(string[] args)
         {
             int x = 1; //explizit typisiert
@@ -58,7 +60,7 @@ namespace LINQDemo
                                  group p by p.Age;
 
             //Gruppierung LINQ
-            var groupedPersons = from p in Person.Factory()
+            var groupedPersons2 = from p in Person.Factory()
                                  group p by Age
                                  into personGroup
                                  orderby personGroup.Key
@@ -66,7 +68,7 @@ namespace LINQDemo
 
             var groupedPersonsLambda = Person.Factory().GroupBy(p => p.Age).OrderBy(g => g.Key);
         }
-
+        
         private void printGroupedPersons(IEnumerable<IGrouping<int, Person>> groupedPersons)
         {
             foreach (var personGroup in groupedPersons)
