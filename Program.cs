@@ -42,6 +42,9 @@ namespace LINQDemo
                 Console.WriteLine(name);
             }
 
+            var groupedPersonsLambda = Person.Factory().GroupBy(p => p.Age).OrderBy(g => g.Key);
+
+
             //Eigene Klasse
             Console.WriteLine("\n----Eigene Klasse-----");
             var sortedPerson = from p in Person.Factory()
@@ -66,7 +69,46 @@ namespace LINQDemo
                                  orderby personGroup.Key
                                  select personGroup;
 
-            var groupedPersonsLambda = Person.Factory().GroupBy(p => p.Age).OrderBy(g => g.Key);
+            //JOINS
+            var joinedQuery = from p in Person.Factory()
+                join c in City.Factory() on p.City equals c.Id
+                where c.Population > 100000
+                select p;
+
+            var joinedQuery2 = Person.Factory()
+                .Join(City.Factory().Where(c => c.Population > 100000),
+                p=>p.City,c=>c.Id,(p,c)=>(p,c));
+
+
+
+            //OUTPUT
+            joinedQuery2.ToList().ForEach(x => Console.WriteLine($"City: {x.c.Id}; Person: {x.p.FirstName}"));
+
+
+            //DATA TRANSOFRMATION
+
+            var personStatistics = from p in Person.Factory()
+                                  group p by p.Age
+                     into personGroup
+                                  orderby personGroup.Key
+                                  select new PersonStatistics //Data Transformation
+                                  {
+                                      Age = personGroup.Key,
+                                      Number = personGroup.Count(),
+                                  };
+
+
+            //NO RESULTS
+
+            var noResult1 = Person.Factory().Where(p => p.FirstName == "Bill" && p.LastName == "Yard")
+                .First();
+
+            if (noResult1 == default(Person)) // NOT == NULL
+            {
+                Console.WriteLine("No Data Found!");
+            }
+
+
         }
         
         private void printGroupedPersons(IEnumerable<IGrouping<int, Person>> groupedPersons)
